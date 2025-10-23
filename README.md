@@ -1,13 +1,13 @@
-#Overview 
+# Overview 
 This project implements an end‑to‑end ELT on Databricks using Auto Loader for streaming ingestion to Bronze, curated Delta tables in Silver, and Gold dimension/fact tables, with sensitive paths anonymized to placeholders.​
 Job orchestration is defined via the Databricks SDK, sequencing Bronze, Silver, and Gold tasks plus a DLT pipeline, with all job and pipeline IDs replaced by placeholders.​
 
-#Architecture 
+# Architecture 
 Bronze uses Auto Loader with a parameterized widget to ingest raw Parquet by dataset into s3://<your-bucket>/bronze/<dataset> with per‑dataset checkpoints and schema locations at s3://<your-bucket>/bronze/.​
 Silver derives curated Delta datasets for customers, products, orders, and regions and registers them under <catalog>.silver.*, with SQL/Python UDF usage demonstrated and all catalog/schema names generalized.​
 Gold builds SCD1 dim_customers with surrogate keys and upserts, SCD2 dim_products via DLT auto CDC, and a fact_orders table joining Silver with dimensions, with all S3 and table paths anonymized.​
 
-#Repository structure
+# Repository structure
 bronze_layer.py: Auto Loader ingestion from s3://<your-bucket>/raw/<dataset> to s3://<your-bucket>/bronze/<dataset> using a filename widget and per‑dataset checkpoint/schema paths.​
 
 parameters.py: Defines a dataset list for workflows and exposes it via dbutils.jobs.taskValues, independent of concrete paths.​
@@ -30,11 +30,11 @@ orders_gold_layer.py: Builds fact_orders with merges to s3://<your-bucket>/gold/
 
 End-to-End-ETL-Pipeline.py: Databricks SDK job graph referencing /Workspace/Users/<user>/databricks_Project/<notebook> with <job_id> and <pipeline_id> placeholders.​
 
-#Prerequisites
+# Prerequisites
 A Databricks workspace with access to an AWS S3 bucket at s3://<your-bucket> for Bronze, Silver, and Gold storage paths.​
 A catalog named <catalog> with schemas bronze, silver, and gold to create and read Delta tables, replacing previous hard‑coded metastore names.​
 
-#Configuration
+# Configuration
 Set the input dataset through the notebook widget filename to parameterize Auto Loader and S3 output/checkpoint locations under s3://<your-bucket>/.​
 Optionally supply datasets via parameters.py and consume them in workflows through dbutils.jobs.taskValues for orchestration without embedding paths.​
 Run create_silver_layer_tables.py once to bind <catalog>.silver tables to s3://<your-bucket>/silver/<table>/ locations.​
